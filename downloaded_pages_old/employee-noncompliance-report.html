@@ -1,0 +1,40 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from pywebcopy import save_webpage
+import time
+import os
+
+# Mở trình duyệt với Selenium
+options = Options()
+options.add_argument("--start-maximized")
+driver = webdriver.Chrome(options=options)
+
+driver.get("https://ten-trang-web-cua-ban.com")
+
+# Cho bạn tự đăng nhập
+input(">>> Đăng nhập xong nhấn Enter...")
+
+# Sau khi đã login, lấy cookie & URL hiện tại
+url = driver.current_url
+cookies = driver.get_cookies()
+
+# Tạo thư mục lưu
+download_dir = os.path.join(os.getcwd(), "cloned_site")
+os.makedirs(download_dir, exist_ok=True)
+
+# Thêm cookies cho pywebcopy
+session_cookies = {cookie['name']: cookie['value'] for cookie in cookies}
+
+# Dùng pywebcopy để tải toàn bộ trang
+save_webpage(
+    url=url,
+    project_folder=download_dir,
+    project_name="full_site",
+    open_in_browser=False,
+    bypass_robots=True,
+    cookies=session_cookies
+)
+
+print("✅ Đã clone đầy đủ trang (CSS, JS, ảnh, HTML).")
+
+driver.quit()
